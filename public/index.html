@@ -7,92 +7,77 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:#1a1f2e;color:#e2e8f0;min-height:100vh;display:flex;flex-direction:column;align-items:center}
-header{width:100%;max-width:900px;padding:1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2d3748}
+header{width:100%;max-width:920px;padding:1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2d3748}
 h1{font-size:1.2rem;font-weight:600;color:#90cdf4;letter-spacing:1px}
 .room-info{font-size:12px;color:#718096;background:#2d3748;padding:4px 12px;border-radius:20px}
-.screen{display:none;width:100%;max-width:900px;padding:1rem}
+.screen{display:none;width:100%;max-width:920px;padding:1rem}
 .screen.active{display:block}
-
-/* lobby */
-.lobby-card{background:#2d3748;border-radius:12px;padding:2rem;text-align:center;max-width:400px;margin:4rem auto}
+.lobby-card{background:#2d3748;border-radius:12px;padding:2rem;text-align:center;max-width:420px;margin:4rem auto}
 .lobby-card h2{font-size:1.4rem;margin-bottom:8px;color:#90cdf4}
 .lobby-card p{font-size:14px;color:#a0aec0;margin-bottom:1.5rem}
 .input-row{display:flex;gap:8px;justify-content:center;margin-bottom:1rem}
-input[type=text]{background:#1a1f2e;border:1px solid #4a5568;border-radius:8px;padding:8px 14px;color:#e2e8f0;font-size:14px;width:140px;text-align:center;text-transform:uppercase}
-input[type=text]::placeholder{text-transform:none;color:#718096}
+input[type=text]{background:#1a1f2e;border:1px solid #4a5568;border-radius:8px;padding:8px 14px;color:#e2e8f0;font-size:14px;width:150px;text-align:center;text-transform:uppercase;letter-spacing:2px}
+input[type=text]::placeholder{text-transform:none;letter-spacing:0;color:#718096}
 button{background:#3182ce;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:14px;cursor:pointer;transition:background 0.15s}
 button:hover{background:#2b6cb0}
 button.sec{background:#2d3748;border:1px solid #4a5568;color:#a0aec0}
 button.sec:hover{background:#4a5568}
-button.danger{background:#c53030}
-button.danger:hover{background:#9b2c2c}
 button:disabled{opacity:0.4;cursor:not-allowed}
-.status-dot{width:8px;height:8px;border-radius:50%;background:#e53e3e;display:inline-block;margin-right:6px}
-.status-dot.on{background:#48bb78}
 .wait-msg{font-size:13px;color:#718096;margin-top:1rem;display:flex;align-items:center;gap:6px;justify-content:center}
-.spinner{width:14px;height:14px;border:2px solid #4a5568;border-top-color:#90cdf4;border-radius:50%;animation:spin 0.8s linear infinite}
+.spinner{width:14px;height:14px;border:2px solid #4a5568;border-top-color:#90cdf4;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* setup */
-.setup-wrap{display:flex;flex-direction:column;align-items:center;gap:1rem}
-.phase-title{font-size:1rem;font-weight:600;color:#90cdf4;text-align:center}
+.err-msg{font-size:13px;color:#fc8181;margin-top:8px;min-height:20px;text-align:center}
+.setup-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.phase-title{font-size:1rem;font-weight:600;color:#90cdf4}
 .ship-rack{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.ship-btn{padding:6px 14px;font-size:13px;border-radius:8px;border:1px solid #4a5568;background:#2d3748;color:#e2e8f0;cursor:pointer}
-.ship-btn:hover{background:#4a5568}
+.ship-btn{padding:6px 14px;font-size:13px;border-radius:8px;border:1px solid #4a5568;background:#2d3748;color:#e2e8f0;cursor:pointer;transition:all 0.1s}
+.ship-btn:hover:not(:disabled){background:#4a5568}
 .ship-btn.sel{background:#2b6cb0;border-color:#63b3ed;color:#fff}
-.ship-btn.done{opacity:0.4;cursor:default}
-.dir-row{display:flex;gap:8px;justify-content:center}
+.ship-btn.done{opacity:0.35;cursor:default;text-decoration:line-through}
+.dir-row{display:flex;gap:8px}
 .dir-btn{padding:5px 14px;font-size:12px;border-radius:6px;border:1px solid #4a5568;background:#2d3748;color:#a0aec0;cursor:pointer}
 .dir-btn.active{background:#2b6cb0;border-color:#63b3ed;color:#fff}
-
-/* board */
-.board-wrap{display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+.board{display:grid;grid-template-columns:24px repeat(5,52px);grid-template-rows:24px repeat(5,52px);gap:2px;user-select:none}
+.hdr{display:flex;align-items:center;justify-content:center;font-size:12px;color:#718096;font-weight:500}
+.cell{width:52px;height:52px;border:1px solid #2d3748;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;background:#1e2535;transition:background 0.1s}
+.cell:hover{background:#2a3147}
+.cell.ship{background:#1e3a5f;border-color:#4a90d9}
+.cell.preview-ok{background:#1a4a2e;border-color:#48bb78}
+.cell.preview-bad{background:#4a1212;border-color:#e53e3e}
+.cell.hit{background:#744210;border-color:#d69e2e;cursor:default}
+.cell.hit::after{content:'🔥';font-size:18px}
+.cell.miss{background:#2d3748;border-color:#4a5568;cursor:default}
+.cell.miss::after{content:'✕';font-size:14px;color:#4a5568}
+.cell.sunk{background:#742a2a;border-color:#e53e3e;cursor:default}
+.cell.sunk::after{content:'💥';font-size:20px}
+.cell.cleared{background:#1c4532;border-color:#48bb78;cursor:default}
+.cell.cleared::after{content:'·';font-size:24px;color:#48bb78}
+.no-ptr{pointer-events:none}
+.board-wrap{display:flex;gap:2rem;flex-wrap:wrap;justify-content:center}
 .board-section{display:flex;flex-direction:column;align-items:center;gap:6px}
 .board-label{font-size:12px;color:#718096;font-weight:500}
-.board{display:grid;grid-template-columns:24px repeat(5,48px);grid-template-rows:24px repeat(5,48px);gap:2px}
-.hdr{display:flex;align-items:center;justify-content:center;font-size:12px;color:#718096;font-weight:500}
-.cell{width:48px;height:48px;border:1px solid #2d3748;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;background:#1e2535;transition:background 0.1s;position:relative}
-.cell:hover{background:#2d3748}
-.cell.ship{background:#2b4c7e;border-color:#63b3ed}
-.cell.preview{background:#1e4068;border-color:#4299e1;opacity:0.7}
-.cell.preview.bad{background:#4a1212;border-color:#e53e3e}
-.cell.hit{background:#744210;border-color:#d69e2e;cursor:default}
-.cell.miss{background:#2d3748;border-color:#4a5568;cursor:default}
-.cell.sunk{background:#742a2a;border-color:#e53e3e;cursor:default}
-.cell.cleared{background:#1c4532;border-color:#48bb78;cursor:default}
-.cell.sunk::after{content:'💥';font-size:20px}
-.cell.hit::after{content:'🔥';font-size:18px}
-.cell.miss::after{content:'✕';font-size:16px;color:#4a5568}
-.cell.cleared::after{content:'·';font-size:24px;color:#48bb78}
-.cell[data-ship]:not(.hit):not(.miss):not(.sunk):not(.cleared)::after{content:attr(data-ship-icon);font-size:16px}
-.no-click{pointer-events:none}
-
-/* battle */
-.turn-bar{text-align:center;padding:8px;background:#2d3748;border-radius:8px;margin-bottom:1rem}
-.turn-bar .badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:600;background:#2b6cb0;color:#fff}
-.turn-bar .badge.opp{background:#2d3748;border:1px solid #4a5568;color:#718096}
+.turn-bar{text-align:center;padding:10px;background:#2d3748;border-radius:8px;margin-bottom:1rem}
+.badge{display:inline-block;padding:4px 16px;border-radius:20px;font-size:13px;font-weight:600;background:#2b6cb0;color:#fff}
+.badge.opp{background:#2d3748;border:1px solid #4a5568;color:#718096}
 .hint-txt{font-size:13px;color:#a0aec0;margin-top:4px}
-.logs{max-height:100px;overflow-y:auto;background:#1a1f2e;border:1px solid #2d3748;border-radius:6px;padding:8px;font-size:12px;color:#718096;margin-top:1rem}
-.log-line{padding:2px 0;border-bottom:1px solid #2d3748}
-.log-line:last-child{border:none}
 .legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;font-size:11px;color:#718096;margin-top:6px}
 .leg{display:flex;align-items:center;gap:4px}
 .leg-sq{width:12px;height:12px;border-radius:2px}
-
-/* overlay */
-.overlay{background:rgba(10,12,20,0.85);min-height:300px;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:2rem 0}
+.logs{max-height:100px;overflow-y:auto;background:#1a1f2e;border:1px solid #2d3748;border-radius:6px;padding:8px;font-size:12px;color:#718096;margin-top:1rem}
+.log-line{padding:2px 0;border-bottom:1px solid #2d3748}
+.log-line:last-child{border:none}
+.overlay{background:rgba(10,12,20,0.9);min-height:280px;display:flex;align-items:center;justify-content:center;border-radius:12px;margin:2rem 0}
 .ov-card{background:#2d3748;border-radius:12px;padding:2.5rem;text-align:center;max-width:340px}
 .ov-card h2{font-size:1.5rem;margin-bottom:8px;color:#90cdf4}
 .ov-card p{font-size:14px;color:#a0aec0;margin-bottom:1.5rem}
-
-@media(max-width:600px){
-  .cell{width:40px;height:40px}
-  .board{grid-template-columns:22px repeat(5,40px);grid-template-rows:22px repeat(5,40px)}
+.setup-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+@media(max-width:560px){
+  .cell{width:42px;height:42px}
+  .board{grid-template-columns:22px repeat(5,42px);grid-template-rows:22px repeat(5,42px)}
 }
 </style>
 </head>
 <body>
-
 <header>
   <h1>⚓ 海戰棋</h1>
   <div class="room-info" id="room-info">未連線</div>
@@ -103,11 +88,13 @@ button:disabled{opacity:0.4;cursor:not-allowed}
   <div class="lobby-card">
     <h2>海戰棋</h2>
     <p>兩人各自佈置艦隊，輪流砲擊，先擊沉對手所有艦艇獲勝</p>
-    <button onclick="joinGame()" id="btn-join" style="width:100%;margin-bottom:8px">快速加入 / 建立房間</button>
+    <button onclick="quickJoin()" id="btn-quick" style="width:100%;margin-bottom:12px">建立新房間</button>
+    <div style="font-size:12px;color:#718096;margin-bottom:8px">— 或加入指定房間 —</div>
     <div class="input-row">
-      <input type="text" id="room-input" placeholder="輸入房間碼" maxlength="6">
-      <button class="sec" onclick="joinRoom()">加入指定房間</button>
+      <input type="text" id="room-input" placeholder="輸入6碼房間碼" maxlength="6">
+      <button class="sec" onclick="joinRoom()">加入</button>
     </div>
+    <div class="err-msg" id="lobby-err"></div>
     <div class="wait-msg" id="wait-msg" style="display:none">
       <div class="spinner"></div>
       <span id="wait-txt">等待對手加入...</span>
@@ -119,17 +106,19 @@ button:disabled{opacity:0.4;cursor:not-allowed}
 <div id="s-setup" class="screen">
   <div class="setup-wrap">
     <div class="phase-title" id="setup-title">佈陣中</div>
-    <div id="setup-opp-wait" style="font-size:13px;color:#718096;display:none">
-      <div class="spinner" style="display:inline-block;vertical-align:middle;margin-right:6px"></div>等待對手完成佈陣...
-    </div>
     <div class="dir-row">
       <button class="dir-btn active" id="dir-h" onclick="setDir('H')">橫向</button>
       <button class="dir-btn" id="dir-v" onclick="setDir('V')">縱向</button>
     </div>
     <div class="ship-rack" id="ship-rack"></div>
     <div class="board" id="setup-board"></div>
-    <p style="font-size:12px;color:#718096;margin-top:4px" id="setup-hint">選擇艦艇後點擊棋盤放置，艦艇間需相隔一格</p>
-    <button class="sec" onclick="resetSetup()" style="margin-top:4px;font-size:12px;padding:5px 14px">重製佈陣</button>
+    <p style="font-size:12px;color:#718096" id="setup-hint">選擇艦艇後點擊棋盤放置，艦艇間需相隔一格</p>
+    <div class="setup-actions">
+      <button class="sec" onclick="doResetSetup()" style="font-size:12px;padding:5px 14px">重製佈陣</button>
+    </div>
+    <div id="setup-opp-wait" style="font-size:13px;color:#718096;display:none">
+      <span class="spinner"></span> 等待對手完成佈陣...
+    </div>
   </div>
 </div>
 
@@ -158,7 +147,7 @@ button:disabled{opacity:0.4;cursor:not-allowed}
   <div class="logs" id="battle-log"></div>
 </div>
 
-<!-- Win/Lose overlay inside battle -->
+<!-- End -->
 <div id="s-end" class="screen">
   <div class="overlay">
     <div class="ov-card">
@@ -174,7 +163,7 @@ button:disabled{opacity:0.4;cursor:not-allowed}
   <div class="overlay">
     <div class="ov-card">
       <h2>對手離線</h2>
-      <p>對手已斷線，請重新整理頁面重新開始</p>
+      <p>對手已斷線，請重新整理頁面</p>
       <button onclick="location.reload()">重新整理</button>
     </div>
   </div>
@@ -182,143 +171,158 @@ button:disabled{opacity:0.4;cursor:not-allowed}
 
 <script>
 const COLS = ['A','B','C','D','E'];
+const ROWS = [1,2,3,4,5];
 const SHIP_DEFS = [
-  {id:'s3', name:'3格艦', size:3},
-  {id:'s2a', name:'2格艦(1)', size:2},
-  {id:'s2b', name:'2格艦(2)', size:2},
-  {id:'s1', name:'1格艦', size:1},
+  {id:'s3',  name:'3格艦', size:3},
+  {id:'s2a', name:'2格艦①', size:2},
+  {id:'s2b', name:'2格艦②', size:2},
+  {id:'s1',  name:'1格艦', size:1},
 ];
-const SHIP_ICONS = {s3:'🚢', s2a:'⛵', s2b:'⛵', s1:'🛶'};
+const ICONS = {s3:'🚢', s2a:'⛵', s2b:'⛵', s1:'🛶'};
 
 let ws = null;
 let myIndex = -1;
-let myGrid = {};
+// local copy of my grid — always kept in sync with server ack
+let localGrid = {};
 let selShip = null;
 let dir = 'H';
 let hoverKey = null;
 
-const WS_URL = location.protocol === 'https:' 
-  ? `wss://${location.host}` 
+const WS_URL = location.protocol === 'https:'
+  ? `wss://${location.host}`
   : `ws://${location.host}`;
 
-function showScreen(id) {
+// ── Screens ──────────────────────────────────────────────
+function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
+// ── WebSocket ─────────────────────────────────────────────
 function connect(cb) {
-  if (ws && ws.readyState === 1) { cb(); return; }
   ws = new WebSocket(WS_URL);
   ws.onopen = cb;
-  ws.onmessage = (e) => handleMsg(JSON.parse(e.data));
+  ws.onmessage = e => onMsg(JSON.parse(e.data));
   ws.onclose = () => {
-    if (document.getElementById('s-lobby').classList.contains('active')) return;
-    showScreen('s-dc');
+    if (!document.getElementById('s-lobby').classList.contains('active')) show('s-dc');
   };
 }
 
-function sendMsg(msg) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(msg)); }
+function sendMsg(msg) {
+  if (ws && ws.readyState === 1) ws.send(JSON.stringify(msg));
+}
 
-function joinGame() {
-  document.getElementById('btn-join').disabled = true;
-  connect(() => sendMsg({type:'join'}));
+// ── Lobby ─────────────────────────────────────────────────
+function quickJoin() {
+  document.getElementById('btn-quick').disabled = true;
+  document.getElementById('lobby-err').textContent = '';
+  connect(() => sendMsg({ type: 'join' }));
 }
 
 function joinRoom() {
   const code = document.getElementById('room-input').value.trim().toUpperCase();
-  if (!code) return;
-  connect(() => sendMsg({type:'join', roomId: code}));
+  if (code.length !== 6) { document.getElementById('lobby-err').textContent = '請輸入6碼房間碼'; return; }
+  document.getElementById('lobby-err').textContent = '';
+  connect(() => sendMsg({ type: 'join', roomId: code }));
 }
 
-function handleMsg(msg) {
-  myIndex = msg.myIndex ?? myIndex;
+// ── Message Handler ───────────────────────────────────────
+function onMsg(msg) {
+  // myIndex 由 joined 或 state 給定
+  if (msg.myIndex !== undefined && msg.myIndex >= 0) myIndex = msg.myIndex;
 
   if (msg.type === 'joined') {
-    const ri = document.getElementById('room-info');
-    ri.textContent = '房間：' + msg.roomId + '  玩家' + (myIndex+1);
+    document.getElementById('room-info').textContent = `房間：${msg.roomId}  玩家${myIndex + 1}`;
     if (msg.playerCount < 2) {
       document.getElementById('wait-msg').style.display = 'flex';
-      document.getElementById('wait-txt').textContent = '房間碼：' + msg.roomId + '  等待對手加入...';
+      document.getElementById('wait-txt').textContent = `房間碼：${msg.roomId}  等待對手加入...`;
     }
+  }
+
+  if (msg.type === 'joinErr') {
+    document.getElementById('lobby-err').textContent = msg.message;
+    document.getElementById('btn-quick').disabled = false;
+    if (ws) ws.close();
   }
 
   if (msg.type === 'ready') {
-    myGrid = {};
-    selShip = null;
-    dir = 'H';
-    buildSetupBoard();
-    buildShipRack([]);
-    showScreen('s-setup');
-    document.getElementById('setup-title').textContent = '玩家' + (myIndex+1) + ' 佈陣';
+    initSetup();
+    show('s-setup');
   }
 
   if (msg.type === 'state') {
+    // 以 server 為準，更新本地 grid
+    localGrid = Object.assign({}, msg.myGrid);
     if (msg.phase === 'setup') {
-      myGrid = msg.myGrid;
-      const placed = SHIP_DEFS.filter(d => Object.values(myGrid).includes(d.id)).map(d => d.id);
+      const placed = SHIP_DEFS.filter(d => Object.values(localGrid).includes(d.id)).map(d => d.id);
       buildShipRack(placed);
-      buildSetupBoard();
+      renderSetupBoard();
       const myDone = msg.setupDone[myIndex];
       document.getElementById('setup-opp-wait').style.display = myDone ? 'flex' : 'none';
+      if (myDone) {
+        selShip = null;
+        document.getElementById('setup-hint').textContent = '等待對手完成佈陣...';
+      }
     }
-    if (msg.phase === 'battle') {
-      renderBattle(msg);
-      showScreen('s-battle');
-    }
-    if (msg.phase === 'end') {
-      renderBattle(msg);
-    }
+    if (msg.phase === 'battle') { renderBattle(msg); show('s-battle'); }
+    if (msg.phase === 'end')    { renderBattle(msg); }
   }
 
-  if (msg.type === 'battleStart') {
-    showScreen('s-battle');
+  if (msg.type === 'battleStart') show('s-battle');
+
+  if (msg.type === 'placeErr') {
+    document.getElementById('setup-hint').textContent = msg.message;
+    // localGrid 已由 state 訊息修正，不需額外操作
   }
 
   if (msg.type === 'result') {
-    const hint = document.getElementById('battle-hint');
-    if (msg.result === 'hit') hint.textContent = '命中！繼續砲擊';
-    else if (msg.result === 'sunk') hint.textContent = '爆破！周圍8格清除，繼續砲擊';
-    else hint.textContent = '未中，等待對手攻擊...';
+    const h = document.getElementById('battle-hint');
+    if (msg.result === 'hit')  h.textContent = '命中！繼續砲擊';
+    else if (msg.result === 'sunk') h.textContent = '爆破！周圍8格清除，繼續砲擊';
+    else h.textContent = '未中，等待對手...';
   }
 
   if (msg.type === 'win') {
     const won = msg.winner === myIndex;
     document.getElementById('end-title').textContent = won ? '勝利！' : '落敗...';
     document.getElementById('end-sub').textContent = won
-      ? '恭喜你擊沉對手所有艦艇！'
-      : '對手擊沉了你所有的艦艇';
-    showScreen('s-end');
-  }
-
-  if (msg.type === 'placeErr') {
-    document.getElementById('setup-hint').textContent = msg.message;
-  }
-
-  if (msg.type === 'disconnect') {
-    showScreen('s-dc');
+      ? '恭喜擊沉對手所有艦艇！' : '所有艦艇已被擊沉';
+    show('s-end');
   }
 
   if (msg.type === 'restart') {
-    myGrid = {};
-    selShip = null;
-    dir = 'H';
-    buildSetupBoard();
-    buildShipRack([]);
-    document.getElementById('setup-opp-wait').style.display = 'none';
-    showScreen('s-setup');
+    initSetup();
+    show('s-setup');
   }
+
+  if (msg.type === 'disconnect') show('s-dc');
 }
 
-// ---- Setup Board ----
-function buildShipRack(placed) {
+// ── Setup ──────────────────────────────────────────────────
+function initSetup() {
+  localGrid = {};
+  selShip = null;
+  hoverKey = null;
+  dir = 'H';
+  document.getElementById('dir-h').classList.add('active');
+  document.getElementById('dir-v').classList.remove('active');
+  document.getElementById('setup-opp-wait').style.display = 'none';
+  document.getElementById('setup-hint').textContent = '選擇艦艇後點擊棋盤放置，艦艇間需相隔一格';
+  document.getElementById('setup-title').textContent = `玩家${myIndex + 1} 佈陣`;
+  buildShipRack([]);
+  renderSetupBoard();
+}
+
+function buildShipRack(placedIds) {
   const rack = document.getElementById('ship-rack');
   rack.innerHTML = '';
   SHIP_DEFS.forEach(s => {
     const btn = document.createElement('button');
-    btn.className = 'ship-btn' + (placed.includes(s.id) ? ' done' : '');
-    btn.textContent = s.name + ' (' + s.size + '格)';
-    btn.disabled = placed.includes(s.id);
-    if (!placed.includes(s.id)) btn.onclick = () => selectShip(s, btn);
+    const isDone = placedIds.includes(s.id);
+    btn.className = 'ship-btn' + (isDone ? ' done' : '');
+    btn.textContent = s.name + `(${s.size})`;
+    btn.disabled = isDone;
+    if (!isDone) btn.onclick = () => selectShip(s, btn);
     rack.appendChild(btn);
   });
 }
@@ -327,165 +331,164 @@ function selectShip(s, btn) {
   selShip = s;
   document.querySelectorAll('.ship-btn').forEach(b => b.classList.remove('sel'));
   btn.classList.add('sel');
-  document.getElementById('setup-hint').textContent = '放置：' + s.name + '（' + s.size + '格）';
+  document.getElementById('setup-hint').textContent = `放置：${s.name}（${s.size}格）— 選擇位置`;
+  renderSetupBoard();
 }
 
 function setDir(d) {
   dir = d;
   document.getElementById('dir-h').classList.toggle('active', d === 'H');
   document.getElementById('dir-v').classList.toggle('active', d === 'V');
-  if (hoverKey) buildSetupBoard(hoverKey);
+  renderSetupBoard();
 }
 
-function getPreviewCells(key) {
-  if (!selShip || !key) return {cells:[], valid:false};
-  const col = key[0], row = parseInt(key[1]);
-  const ci = COLS.indexOf(col);
-  const cells = [];
-  let valid = true;
-  for (let i = 0; i < selShip.size; i++) {
-    let k;
-    if (dir === 'H') { const nc = COLS[ci + i]; if (!nc) { valid=false; break; } k = nc + row; }
-    else { const nr = row + i; if (nr > 5) { valid=false; break; } k = col + nr; }
-    cells.push(k);
-  }
-  // check overlap & neighbors
-  if (valid) {
-    const nb = getNeighbors(myGrid);
-    for (const k of cells) {
-      if (myGrid[k] || nb.has(k)) { valid = false; break; }
-    }
-  }
-  return {cells, valid};
-}
-
-function getNeighbors(grid) {
+function getNeighbors(keys) {
   const nb = new Set();
-  Object.keys(grid).forEach(k => {
+  keys.forEach(k => {
     const c = k[0], r = parseInt(k[1]), ci = COLS.indexOf(c);
-    for (let dc=-1; dc<=1; dc++) for (let dr=-1; dr<=1; dr++) {
-      if (dc===0&&dr===0) continue;
-      const nc=COLS[ci+dc], nr=r+dr;
-      if (nc&&nr>=1&&nr<=5) nb.add(nc+nr);
+    for (let dc = -1; dc <= 1; dc++) for (let dr = -1; dr <= 1; dr++) {
+      if (!dc && !dr) continue;
+      const nc = COLS[ci + dc], nr = r + dr;
+      if (nc && nr >= 1 && nr <= 5) nb.add(nc + nr);
     }
   });
   return nb;
 }
 
-function buildSetupBoard(hKey) {
+function previewCells(hKey) {
+  if (!selShip || !hKey) return { cells: [], ok: false };
+  const col = hKey[0], row = parseInt(hKey[1]), ci = COLS.indexOf(col);
+  const cells = [];
+  for (let i = 0; i < selShip.size; i++) {
+    let k;
+    if (dir === 'H') { const nc = COLS[ci + i]; if (!nc) return { cells, ok: false }; k = nc + row; }
+    else { const nr = row + i; if (nr > 5) return { cells, ok: false }; k = col + nr; }
+    cells.push(k);
+  }
+  // check vs existing ships (excluding currently selected ship to allow re-place)
+  const gridWithout = Object.fromEntries(
+    Object.entries(localGrid).filter(([, v]) => v !== selShip.id)
+  );
+  const nb = getNeighbors(Object.keys(gridWithout));
+  const ok = cells.every(k => !gridWithout[k] && !nb.has(k));
+  return { cells, ok };
+}
+
+function renderSetupBoard() {
   const board = document.getElementById('setup-board');
   board.innerHTML = '';
-  board.appendChild(Object.assign(document.createElement('div'), {className:'hdr'}));
-  COLS.forEach(c => { const d=document.createElement('div');d.className='hdr';d.textContent=c;board.appendChild(d); });
+  board.appendChild(mkHdr(''));
+  COLS.forEach(c => board.appendChild(mkHdr(c)));
 
-  const preview = hKey ? getPreviewCells(hKey) : {cells:[], valid:false};
+  const pv = previewCells(hoverKey);
 
-  COLS.forEach ? null : null;
-  [1,2,3,4,5].forEach(r => {
-    const rh = document.createElement('div');
-    rh.className='hdr'; rh.textContent=r; board.appendChild(rh);
+  ROWS.forEach(r => {
+    board.appendChild(mkHdr(r));
     COLS.forEach(c => {
       const key = c + r;
       const cell = document.createElement('div');
       cell.className = 'cell';
-      if (myGrid[key]) {
+      if (localGrid[key]) {
         cell.classList.add('ship');
-        cell.setAttribute('data-ship-icon', SHIP_ICONS[myGrid[key]] || '');
-      } else if (preview.cells.includes(key)) {
-        cell.classList.add('preview');
-        if (!preview.valid) cell.classList.add('bad');
+        cell.textContent = ICONS[localGrid[key]] || '';
+      } else if (pv.cells.includes(key)) {
+        cell.classList.add(pv.ok ? 'preview-ok' : 'preview-bad');
       }
-      cell.onmouseenter = () => { hoverKey=key; buildSetupBoard(key); };
-      cell.onmouseleave = () => { hoverKey=null; buildSetupBoard(); };
-      cell.onclick = () => placeShip(c, r);
+      cell.onmouseenter = () => { hoverKey = key; renderSetupBoard(); };
+      cell.onmouseleave = () => { hoverKey = null; renderSetupBoard(); };
+      cell.onclick = () => doPlace(c, r);
       board.appendChild(cell);
     });
   });
 }
 
-function placeShip(col, row) {
-  if (!selShip) { document.getElementById('setup-hint').textContent='請先選擇艦艇'; return; }
-  // 先樂觀更新本地 grid，讓後續 hover 預覽正確
-  const ci = COLS.indexOf(col), r = parseInt(row);
-  const cells = {};
-  let valid = true;
-  for (let i = 0; i < selShip.size; i++) {
-    let k;
-    if (dir === 'H') { const nc = COLS[ci+i]; if (!nc){valid=false;break;} k=nc+r; }
-    else { const nr=r+i; if(nr>5){valid=false;break;} k=col+nr; }
-    cells[k]=true;
+function mkHdr(txt) {
+  const d = document.createElement('div');
+  d.className = 'hdr';
+  d.textContent = txt;
+  return d;
+}
+
+function doPlace(col, row) {
+  if (!selShip) { document.getElementById('setup-hint').textContent = '請先選擇艦艇'; return; }
+  // client-side pre-check for immediate feedback
+  const { cells, ok } = previewCells(col + row);
+  if (!ok || cells.length === 0) {
+    document.getElementById('setup-hint').textContent = '無法放置（超界或太靠近其他艦艇）';
+    return;
   }
-  if (!valid) { document.getElementById('setup-hint').textContent='無法放置（超界）'; return; }
-  const nb = getNeighbors(myGrid);
-  for (const k of Object.keys(cells)) {
-    if (myGrid[k] || nb.has(k)) { document.getElementById('setup-hint').textContent='無法放置（太靠近其他艦艇）'; return; }
-  }
-  Object.keys(cells).forEach(k => myGrid[k] = selShip.id);
-  sendMsg({type:'place', shipId:selShip.id, col, row:parseInt(row), dir});
+  // optimistic local update
+  Object.keys(localGrid).forEach(k => { if (localGrid[k] === selShip.id) delete localGrid[k]; });
+  cells.forEach(k => localGrid[k] = selShip.id);
+  // send to server for authoritative update
+  sendMsg({ type: 'place', shipId: selShip.id, col, row: parseInt(row), dir });
   selShip = null;
   hoverKey = null;
   document.querySelectorAll('.ship-btn').forEach(b => b.classList.remove('sel'));
-  buildSetupBoard();
+  renderSetupBoard();
+  // update rack
+  const placed = SHIP_DEFS.filter(d => Object.values(localGrid).includes(d.id)).map(d => d.id);
+  buildShipRack(placed);
+  const remaining = SHIP_DEFS.filter(d => !placed.includes(d.id));
+  document.getElementById('setup-hint').textContent = remaining.length
+    ? `還需放置：${remaining.map(d => d.name).join('、')}`
+    : '所有艦艇已就位！等待伺服器確認...';
 }
 
-function resetSetup() {
-  sendMsg({type:'resetSetup'});
-  myGrid = {};
+function doResetSetup() {
+  localGrid = {};
   selShip = null;
   hoverKey = null;
   buildShipRack([]);
-  buildSetupBoard();
-  document.getElementById('setup-hint').textContent='選擇艦艇後點擊棋盤放置，艦艇間需相隔一格';
-  document.getElementById('setup-opp-wait').style.display='none';
+  renderSetupBoard();
+  document.getElementById('setup-hint').textContent = '選擇艦艇後點擊棋盤放置，艦艇間需相隔一格';
+  document.getElementById('setup-opp-wait').style.display = 'none';
+  sendMsg({ type: 'resetSetup' });
 }
 
-// ---- Battle ----
+// ── Battle ─────────────────────────────────────────────────
 function renderBattle(msg) {
-  const isMyTurn = msg.currentTurn === myIndex;
-  document.getElementById('turn-badge').textContent = isMyTurn ? '你的回合' : '對手回合';
-  document.getElementById('turn-badge').className = 'badge' + (isMyTurn ? '' : ' opp');
-  if (isMyTurn) document.getElementById('battle-hint').textContent = '點擊對手海域發射砲彈';
+  const mine = msg.currentTurn === myIndex;
+  document.getElementById('turn-badge').textContent = mine ? '你的回合' : '對手回合';
+  document.getElementById('turn-badge').className = 'badge' + (mine ? '' : ' opp');
+  if (mine && !document.getElementById('battle-hint').textContent)
+    document.getElementById('battle-hint').textContent = '點擊對手海域發射砲彈';
 
-  buildBattleBoard('board-attack', msg.oppGrid, msg.myAttackOnOpp, isMyTurn, false);
-  buildBattleBoard('board-defend', msg.myGrid, msg.oppAttackOnMe, false, true);
+  buildBattleBoard('board-attack', msg.oppGrid,  msg.myAttackOnOpp,  mine,  false);
+  buildBattleBoard('board-defend', msg.myGrid,   msg.oppAttackOnMe,  false, true);
 
   if (msg.logs) {
     document.getElementById('battle-log').innerHTML =
-      msg.logs.map(l => '<div class="log-line">' + l + '</div>').join('');
+      msg.logs.map(l => `<div class="log-line">${l}</div>`).join('');
   }
 }
 
-function buildBattleBoard(containerId, shipGrid, attackMap, clickable, showShips) {
-  const board = document.getElementById(containerId);
+function buildBattleBoard(id, shipGrid, atkMap, clickable, showShips) {
+  const board = document.getElementById(id);
   board.innerHTML = '';
-  board.appendChild(Object.assign(document.createElement('div'), {className:'hdr'}));
-  COLS.forEach(c => { const d=document.createElement('div');d.className='hdr';d.textContent=c;board.appendChild(d); });
-  [1,2,3,4,5].forEach(r => {
-    const rh=document.createElement('div');rh.className='hdr';rh.textContent=r;board.appendChild(rh);
+  board.appendChild(mkHdr(''));
+  COLS.forEach(c => board.appendChild(mkHdr(c)));
+  ROWS.forEach(r => {
+    board.appendChild(mkHdr(r));
     COLS.forEach(c => {
       const key = c + r;
       const cell = document.createElement('div');
       cell.className = 'cell';
-      const atk = attackMap ? attackMap[key] : null;
-      if (atk === 'sunk') cell.classList.add('sunk');
-      else if (atk === 'hit') cell.classList.add('hit');
-      else if (atk === 'miss') cell.classList.add('miss');
+      const atk = atkMap ? atkMap[key] : null;
+      if      (atk === 'sunk')    cell.classList.add('sunk');
+      else if (atk === 'hit')     cell.classList.add('hit');
+      else if (atk === 'miss')    cell.classList.add('miss');
       else if (atk === 'cleared') cell.classList.add('cleared');
       else if (showShips && shipGrid && shipGrid[key]) {
         cell.classList.add('ship');
-        cell.setAttribute('data-ship-icon', SHIP_ICONS[shipGrid[key]] || '');
+        cell.textContent = ICONS[shipGrid[key]] || '';
       }
-      if (clickable && !atk) {
-        cell.onclick = () => sendMsg({type:'fire', key});
-      } else {
-        cell.classList.add('no-click');
-      }
+      if (clickable && !atk) cell.onclick = () => sendMsg({ type: 'fire', key });
+      else cell.classList.add('no-ptr');
       board.appendChild(cell);
     });
   });
 }
-
-buildSetupBoard();
 </script>
 </body>
 </html>
