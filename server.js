@@ -216,6 +216,14 @@ wss.on('connection', (ws) => {
       return;
     }
 
+    if (msg.type === 'resetSetup') {
+      if (s.phase !== 'setup') return;
+      s.grids[myIndex] = {};
+      s.setupDone[myIndex] = false;
+      sendState(myRoom);
+      return;
+    }
+
     if (msg.type === 'restart') {
       myRoom.state = createGameState();
       broadcast(myRoom, { type: 'restart' });
