@@ -129,6 +129,7 @@ button:disabled{opacity:0.4;cursor:not-allowed}
     <div class="ship-rack" id="ship-rack"></div>
     <div class="board" id="setup-board"></div>
     <p style="font-size:12px;color:#718096;margin-top:4px" id="setup-hint">選擇艦艇後點擊棋盤放置，艦艇間需相隔一格</p>
+    <button class="sec" onclick="resetSetup()" style="margin-top:4px;font-size:12px;padding:5px 14px">重製佈陣</button>
   </div>
 </div>
 
@@ -404,9 +405,38 @@ function buildSetupBoard(hKey) {
 
 function placeShip(col, row) {
   if (!selShip) { document.getElementById('setup-hint').textContent='請先選擇艦艇'; return; }
+  // 先樂觀更新本地 grid，讓後續 hover 預覽正確
+  const ci = COLS.indexOf(col), r = parseInt(row);
+  const cells = {};
+  let valid = true;
+  for (let i = 0; i < selShip.size; i++) {
+    let k;
+    if (dir === 'H') { const nc = COLS[ci+i]; if (!nc){valid=false;break;} k=nc+r; }
+    else { const nr=r+i; if(nr>5){valid=false;break;} k=col+nr; }
+    cells[k]=true;
+  }
+  if (!valid) { document.getElementById('setup-hint').textContent='無法放置（超界）'; return; }
+  const nb = getNeighbors(myGrid);
+  for (const k of Object.keys(cells)) {
+    if (myGrid[k] || nb.has(k)) { document.getElementById('setup-hint').textContent='無法放置（太靠近其他艦艇）'; return; }
+  }
+  Object.keys(cells).forEach(k => myGrid[k] = selShip.id);
   sendMsg({type:'place', shipId:selShip.id, col, row:parseInt(row), dir});
   selShip = null;
+  hoverKey = null;
   document.querySelectorAll('.ship-btn').forEach(b => b.classList.remove('sel'));
+  buildSetupBoard();
+}
+
+function resetSetup() {
+  sendMsg({type:'resetSetup'});
+  myGrid = {};
+  selShip = null;
+  hoverKey = null;
+  buildShipRack([]);
+  buildSetupBoard();
+  document.getElementById('setup-hint').textContent='選擇艦艇後點擊棋盤放置，艦艇間需相隔一格';
+  document.getElementById('setup-opp-wait').style.display='none';
 }
 
 // ---- Battle ----
